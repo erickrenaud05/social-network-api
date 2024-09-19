@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User } = require('../../models');
+const { User, Thought } = require('../../models');
 
 router.get('/', async(req, res)=>{
     try {
@@ -67,7 +67,6 @@ router.put('/:id', async(req, res)=>{
     };
 
     try {
-
         const updatedUser = await User.findByIdAndUpdate(req.params.id, updatedValues, {new: true, runValidators: true});
 
         if(!updatedUser){
@@ -75,10 +74,36 @@ router.put('/:id', async(req, res)=>{
         }
 
         return res.status(201).json(updatedUser);
-
     } catch (error) {
         return res.status(400).json(error);
     };
+});
+
+router.delete('/:id', async(req, res)=>{
+    if(!req.params.id){
+        return res.status(400).json('Invalid request');
+    };
+
+    try {
+        //delete thoughts first 
+        const deletedThoughts = await Thought.deleteMany({
+            _id: req.params.id,
+        });
+
+        if(!deletedThoughts){
+            throw new Error('Internal server error');
+        }
+
+        const deletedUser = await User.findByIdAndDelete(req.params.id);
+
+        if(!deletedUser){
+            return res.status(404).json('No user found');
+        };
+
+        return res.status(201).json(`Successfully deleted user and ${deletedThoughts.deletedCount} thoughts associated with user`);
+    } catch (error) {
+        return res.status(500).json('Internal server errors');
+    }
 });
 
 module.exports = router;
