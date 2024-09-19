@@ -15,6 +15,20 @@ router.get('/', async(req, res)=>{
     }
 });
 
+router.get('/:id', async(req, res)=>{
+    try {
+        const singleThought = await Thought.findById(req.params.id);
+
+        if(!singleThought){
+            return res.status(404).json('Thought not found');
+        };
+
+        return res.status(200).json(singleThought);
+    } catch (error) {
+        return res.status(500).json('Internal server error');
+    }
+});
+
 router.post('/', async(req, res)=>{
     const { thoughtText, userId } = req.body;
 
