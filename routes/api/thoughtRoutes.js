@@ -79,4 +79,23 @@ router.put('/:id', async(req, res)=>{
     };
 });
 
+router.delete('/:id', async(req, res)=>{
+    if(!req.params.id){
+        return res.status(400).json('Invalid request');
+    };
+
+    try {
+
+        const deletedThought = await Thought.findByIdAndDelete(req.params.id);
+
+        if(!deletedThought){
+            return res.status(404).json('No user found');
+        };
+
+        return res.status(201).json(`Successfully deleted thought with id of ${deletedThought.id} by ${deletedThought.username}`);
+    } catch (error) {
+        return res.status(500).json('Internal server errors');
+    }
+});
+
 module.exports = router;
