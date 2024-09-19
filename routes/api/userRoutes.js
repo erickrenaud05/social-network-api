@@ -117,6 +117,7 @@ router.post('/:id/friends/:friendId', async(req, res)=>{
         //Making sure friend id is a valid user
         const friend = await User.findById(req.params.friendId);
 
+        //Making sure friend isnt self, invalid or already friends
         if(!user || !friend){
             return res.status(404).json('User not found');
         };
@@ -135,7 +136,38 @@ router.post('/:id/friends/:friendId', async(req, res)=>{
 
         return res.status(201).json(user);
     } catch (error) {
+        return res.status(500).json('Internal server error');
+    }
+});
+
+router.delete('/:id/friends/:friendId', async(req, res)=>{
+    if(!req.params.id || !req.params.friendId){
+        return res.status(400).json('Invalid request');
+    };
+
+    
+    try {
+        const user = await User.findById(req.params.id);
+
+        const friendId = req.params.friendId;
+
+        if(!user){
+            return res.status(404).json('User not found');
+        };
+
+        if(!user.friends.includes(friendId)){
+            return res.status(404).json(`${user.username} is not friends with this user`);
+        }
+
+        const indexOfFriend = user.friends.indexOf(friendId);
+
+        user.friends.splice(indexOfFriend, 1);
         
+        await user.save();
+
+        return res.status(201).json(user);
+    } catch (error) {
+        return res.status(500).json('Internal server error');
     }
 });
 
