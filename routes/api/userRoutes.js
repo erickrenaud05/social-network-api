@@ -7,7 +7,7 @@ const { ObjectId } = mongoose.Types;
 router.get('/', async(req, res)=>{
     try {
 
-        const user = await User.find({}, {_id: false, username: true, email: true});
+        const user = await User.find({});
 
         if(!user){
             return res.status(404).json('no users found');
