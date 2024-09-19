@@ -15,4 +15,34 @@ router.get('/', async(req, res)=>{
     }
 });
 
+router.post('/', async(req, res)=>{
+    const { thoughtText, userId } = req.body;
+
+    if(!thoughtText || !userId){
+        return res.status(400).json('Invalid request');
+    };
+
+    try {
+        const user = await User.findById(userId);
+
+        if(!user){
+            return res.status(404).json('User not found');
+        };
+
+        const newThought = await Thought.create({
+            thoughtText,
+            username: user.username
+        });
+
+        user.thoughts.push(newThought.id);
+
+        user.save();
+
+        return res.status(200).json(user);
+
+    } catch (error) {
+        return res.status(500).json('Internal server error');
+    }
+});
+
 module.exports = router;
