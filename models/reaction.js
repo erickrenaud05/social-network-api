@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const {ObjectId} = mongoose.Types;
+
 
 const reactionSchema = new mongoose.Schema({
     reactionId: {
@@ -21,7 +23,7 @@ const reactionSchema = new mongoose.Schema({
     },
     createAt: {
         type: Date,
-        default: new Date.now(),
+        default: Date.now(),
     }
 })
 
