@@ -48,7 +48,8 @@ router.post('/', async(req, res)=>{
             email,
         });
 
-        console.log(newUser);
+        return res.status(200).json(newUser);
+
     } catch (error) {
         if(error.code === 11000){
             return res.status(400).json(`This ${Object.keys(error.errorResponse.keyPattern)} already exist`);
@@ -103,6 +104,38 @@ router.delete('/:id', async(req, res)=>{
         return res.status(201).json(`Successfully deleted user and ${deletedThoughts.deletedCount} thoughts associated with user`);
     } catch (error) {
         return res.status(500).json('Internal server errors');
+    }
+});
+
+router.post('/:id/friends/:friendId', async(req, res)=>{
+    if(!req.params.id || !req.params.friendId){
+        return res.status(400).json('Invalid request');
+    };
+
+    try {
+        const user = await User.findById(req.params.id);
+        //Making sure friend id is a valid user
+        const friend = await User.findById(req.params.friendId);
+
+        if(!user || !friend){
+            return res.status(404).json('User not found');
+        };
+
+        if(user.id === friend.id){
+            return res.status(400).json('Cannot add self to friends list');
+        }
+
+        if(user.friends.includes(friend.id)){
+            return res.status(400).json(`${friend.username} is already ${user.username}'s friend`);
+        }
+
+        user.friends.push(friend.id);
+
+        await user.save();
+
+        return res.status(201).json(user);
+    } catch (error) {
+        
     }
 });
 
