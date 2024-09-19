@@ -50,12 +50,35 @@ router.post('/', async(req, res)=>{
 
         console.log(newUser);
     } catch (error) {
-        if(error.errorResponse.code){
+        if(error.code === 11000){
             return res.status(400).json(`This ${Object.keys(error.errorResponse.keyPattern)} already exist`);
         };
 
         return res.status(500).json('Internal server error');
     }
+});
+
+router.put('/:id', async(req, res)=>{
+
+    const updatedValues = req.body;
+
+    if(!updatedValues || !req.params.id){
+        return res.status(400).json('invalid request');
+    };
+
+    try {
+
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, updatedValues, {new: true, runValidators: true});
+
+        if(!updatedUser){
+            return res.status(404).json('No user found');
+        }
+
+        return res.status(201).json(updatedUser);
+
+    } catch (error) {
+        return res.status(400).json(error);
+    };
 });
 
 module.exports = router;
