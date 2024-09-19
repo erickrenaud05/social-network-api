@@ -59,4 +59,24 @@ router.post('/', async(req, res)=>{
     }
 });
 
+router.put('/:id', async(req, res)=>{
+    const updatedValue = req.body.thoughtText;
+
+    if(!updatedValue || !req.params.id){
+        return res.status(400).json('invalid request');
+    };
+
+    try {
+        const updatedThought = await Thought.findByIdAndUpdate(req.params.id, {thoughtText: updatedValue}, {new: true, runValidators: true});
+
+        if(!updatedThought){
+            return res.status(404).json('No thought found');
+        }
+
+        return res.status(201).json(updatedThought);
+    } catch (error) {
+        return res.status(400).json(error);
+    };
+});
+
 module.exports = router;
