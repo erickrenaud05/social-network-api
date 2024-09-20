@@ -112,6 +112,10 @@ router.post('/:id/reactions', async(req, res)=>{
             {$addToSet: {reactions: newReaction}},
             {new: true, runValidators: true}
         );
+
+        if(!thought){
+            return res.status(404).json('Thought not found')
+        };
           
         return res.status(201).json(thought);
     } catch (error) {
