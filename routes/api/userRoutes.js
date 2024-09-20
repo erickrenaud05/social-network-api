@@ -4,7 +4,7 @@ const { User, Thought } = require('../../models');
 router.get('/', async(req, res)=>{
     try {
 
-        const user = await User.find({});
+        const user = await User.find({}).select('-__v');
 
         if(!user){
             return res.status(404).json('no users found');
@@ -21,7 +21,7 @@ router.get('/', async(req, res)=>{
 router.get('/:id', async(req, res)=>{
     try {
  
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id).select('-__v').populate('thoughts friends', '-__v');
  
         if(!user){
             return res.status(404).json('User not found');
@@ -112,27 +112,21 @@ router.post('/:id/friends/:friendId', async(req, res)=>{
         return res.status(400).json('Invalid request');
     };
 
-    try {
-        const user = await User.findById(req.params.id);
-        //Making sure friend id is a valid user
-        const friend = await User.findById(req.params.friendId);
+    if(req.params.id === req.params.friendId){
+        return res.status(400).json('Cannot add self as friend');
+    }
 
-        //Making sure friend isnt self, invalid or already friends
-        if(!user || !friend){
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { $addToSet: {friends: req.params.friendId} },
+            {new: true, runValidators: true},            
+        )
+
+        if(!user){
             return res.status(404).json('User not found');
         };
 
-        if(user.id === friend.id){
-            return res.status(400).json('Cannot add self to friends list');
-        }
-
-        if(user.friends.includes(friend.id)){
-            return res.status(400).json(`${friend.username} is already ${user.username}'s friend`);
-        }
-
-        user.friends.push(friend.id);
-
-        await user.save();
 
         return res.status(201).json(user);
     } catch (error) {

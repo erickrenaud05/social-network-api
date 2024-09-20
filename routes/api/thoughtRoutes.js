@@ -30,32 +30,33 @@ router.get('/:id', async(req, res)=>{
 });
 
 router.post('/', async(req, res)=>{
-    const { thoughtText, userId } = req.body;
+    const { thoughtText, username } = req.body;
 
-    if(!thoughtText || !userId){
+    if(!thoughtText || !username){
         return res.status(400).json('Invalid request');
     };
 
-    try {
-        const user = await User.findById(userId);
+    try {   
+        const user = await User.findOne({
+            username,
+        });
 
         if(!user){
-            return res.status(404).json('User not found');
+            return res.status(404).json('User not found')
         };
 
         const newThought = await Thought.create({
             thoughtText,
-            username: user.username
+            username,
         });
 
-        user.thoughts.push(newThought.id);
+        user.thoughts.push(newThought);
+        await user.save();
 
-        user.save();
-
-        return res.status(200).json(user);
+        return res.status(200).json(newThought);
 
     } catch (error) {
-        return res.status(500).json('Internal server error');
+        return res.status(500).json(`Internal server error, ${error}`);
     }
 });
 
@@ -92,7 +93,7 @@ router.delete('/:id', async(req, res)=>{
             return res.status(404).json('No user found');
         };
 
-        return res.status(201).json(`Successfully deleted thought with id of ${deletedThought.id} by ${deletedThought.username}`);
+        return res.status(201).json(`Successfully deleted thought with id of ${req.params.id} by ${deletedThought.username}`);
     } catch (error) {
         return res.status(500).json('Internal server errors');
     }

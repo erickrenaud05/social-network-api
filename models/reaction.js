@@ -9,7 +9,7 @@ const reactionSchema = new mongoose.Schema({
     reactionBody: {
         type: String,
         required: true,
-        maxLength: 280,
+        maxlength: 280,
     },
     username: {
         type: String,
@@ -18,8 +18,9 @@ const reactionSchema = new mongoose.Schema({
     createAt: {
         type: Date,
         default: Date.now(),
+        get: v => v.toLocaleDateString('en-US'),
     }
-}, {_id: false, toJSON: { getters: true }});
+}, {_id: false});
 
 
 module.exports = reactionSchema;

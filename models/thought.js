@@ -11,17 +11,25 @@ const thoughtSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now(),
+        get: v => v.toLocaleDateString('en-US'),
     },
     username: {
         type: String,
         required: true,
     },
     reactions: [reactionSchema],
-});
+},
+{
+    toJSON: { virtuals: true, getters: true },
+    id: false,
+}
 
-thoughtSchema.virtual('reactionCount', function(){
+);
+
+thoughtSchema.virtual('reactionCount').get(function(){
     return this.reactions.length;
 });
+
 
 const Thoughts = mongoose.model('thought', thoughtSchema);
 
