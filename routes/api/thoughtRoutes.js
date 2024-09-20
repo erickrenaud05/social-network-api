@@ -108,17 +108,15 @@ router.post('/:id/reactions', async(req, res)=>{
     };
 
     try {
-        const thought = await Thought.findById(
-            req.params.id 
-          );
+        const thought = await Thought.findByIdAndUpdate(
+            req.params.id,
+            {$addToSet: {reactions: newReaction}},
+            {new: true, runValidators: true}
+        );
           
-        
-        console.log(thought.reactions.create({reactionBody: newReaction.reactionBody, username: newReaction.username}))
-        await thought.save();
-
         return res.status(201).json(thought);
     } catch (error) {
-        return res.status(500).json('Internal server error');
+        return res.status(500).json(`Internal server error, ${error}`);
     }
 });
 
