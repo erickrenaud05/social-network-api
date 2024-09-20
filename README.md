@@ -9,7 +9,7 @@
 [Questions](#questions)
 
 ## Description
-This back end uses node.js, and mongosse to create a backend server connecting to a mongoDb database. This back end is made for social networking.  It stores users, thoughts, and reactions to thoughts.
+This back end uses node.js, and mongosse to create a backend server connecting to a mongoDb database. This back end is made for social networking.  It stores users, thoughts, and reactions to thoughts. Here is a demonstration using local servers and insomnia: [Demonstration](demonstrationVideo/socialNetworkDemonstration).
 
 ## Usage
 To use this backend, you need node.js and any mongoDb servers. To make sure you have them, please refer to the installation guide. Once the installation is complete, add your mongoDb_uri to the config file, then run npm install inside the main repo. And finally, run node server.js.
