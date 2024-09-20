@@ -1,21 +1,15 @@
 const mongoose = require('mongoose');
-const {ObjectId} = mongoose.Types;
 
 
 const reactionSchema = new mongoose.Schema({
     reactionId: {
-        type: ObjectId,
-        default: new ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        default: () => new mongoose.Types.ObjectId(),
     },
     reactionBody: {
         type: String,
         required: true,
-        validate: {
-            validator: function(v){
-                return v.length > 280
-            },
-            message: props => `${props} is too long`
-        }
+        maxlength: 280,
     },
     username: {
         type: String,
@@ -24,7 +18,9 @@ const reactionSchema = new mongoose.Schema({
     createAt: {
         type: Date,
         default: Date.now(),
+        get: v => v.toLocaleDateString('en-US'),
     }
-})
+}, {_id: false});
+
 
 module.exports = reactionSchema;

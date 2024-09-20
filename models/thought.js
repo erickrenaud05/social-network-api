@@ -5,31 +5,31 @@ const thoughtSchema = new mongoose.Schema({
     thoughtText: {
         type: String,
         required: true,
-        validate: { 
-            validator: function(v){
-                return v.length > 1 && v.length < 280
-            },
-            message: props => `${props.value} is not a valid thought!` 
-        },
+        minLength: 1,
+        maxLength: 280,
     },
     createdAt: {
         type: Date,
         default: Date.now(),
+        get: v => v.toLocaleDateString('en-US'),
     },
     username: {
         type: String,
         required: true,
     },
-    reactions: [
-        {
-            reactionSchema,
-        }
-    ]
-});
+    reactions: [reactionSchema],
+},
+{
+    toJSON: { virtuals: true, getters: true },
+    id: false,
+}
 
-thoughtSchema.virtual('reactionCount', function(){
+);
+
+thoughtSchema.virtual('reactionCount').get(function(){
     return this.reactions.length;
 });
+
 
 const Thoughts = mongoose.model('thought', thoughtSchema);
 

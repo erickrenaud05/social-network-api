@@ -10,8 +10,13 @@ const userSchema = new mongoose.Schema({
         message: props => `${props.value} is not a valid email address!`
     }},
     thoughts: [{ type: mongoose.Types.ObjectId, ref: Thoughts }],
-    friends: [{ type: mongoose.Types.ObjectId, ref: this }]
-});
+    friends: [{ type: mongoose.Types.ObjectId, ref: 'user' }]
+}, 
+    {
+        toJSON: { virtuals: true },
+        id: false
+    }
+);
 
 userSchema.virtual('friendCount').get(function(){
     return this.friends.length;
