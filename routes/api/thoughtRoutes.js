@@ -98,8 +98,6 @@ router.delete('/:id', async(req, res)=>{
     }
 });
 
-//to fix
-
 router.post('/:id/reactions', async(req, res)=>{
     const newReaction = req.body;
 
@@ -126,23 +124,19 @@ router.delete('/:id/reactions/:reactionId', async(req,res)=>{
     };
 
     try {
-        const thought = await Thought.findById(req.params.id);
+        const thought = await Thought.findByIdAndUpdate(
+            req.params.id,
+            { $pull: {reactions: req.params.reactionId} },
+            {new: true},
+        );
 
         if(!thought){
             return res.status(404).json('Thought not found');
         };
 
-        for(let i = 0; i < thought.reactions.length; i++){
-            if(String(thought.reactions[i].reactionId) === req.params.reactionId){
-                thought.reactions.splice(i, 1);
-                break;
-            }
-        }
-        
-        await thought.save();
-        return res.status(201).json(thought.reactions);
+        return res.status(201).json(thought);
     } catch (error) {
-        return res.status(500).json('Internal server error');
+        return res.status(500).json(`Internal server error, ${error}`);
     }
 });
 
