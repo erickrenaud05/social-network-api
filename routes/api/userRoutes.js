@@ -147,23 +147,14 @@ router.delete('/:id/friends/:friendId', async(req, res)=>{
 
     
     try {
-        const user = await User.findById(req.params.id);
-
-        const friendId = req.params.friendId;
+        const user = await User.findByIdAndUpdate(req.params.id,
+            { $pull: {friends: req.params.friendId}},
+            { new: true },
+        );
 
         if(!user){
             return res.status(404).json('User not found');
         };
-
-        if(!user.friends.includes(friendId)){
-            return res.status(404).json(`${user.username} is not friends with this user`);
-        }
-
-        const indexOfFriend = user.friends.indexOf(friendId);
-
-        user.friends.splice(indexOfFriend, 1);
-        
-        await user.save();
 
         return res.status(201).json(user);
     } catch (error) {
