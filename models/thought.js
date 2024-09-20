@@ -5,12 +5,8 @@ const thoughtSchema = new mongoose.Schema({
     thoughtText: {
         type: String,
         required: true,
-        validate: { 
-            validator: function(v){
-                return v.length > 1 && v.length < 280
-            },
-            message: props => `${props.value} is not a valid thought!` 
-        },
+        minLength: 1,
+        maxLength: 280,
     },
     createdAt: {
         type: Date,

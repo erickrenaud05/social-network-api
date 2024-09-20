@@ -5,17 +5,13 @@ const {ObjectId} = mongoose.Types;
 const reactionSchema = new mongoose.Schema({
     reactionId: {
         type: ObjectId,
-        default: new ObjectId
+        default: new ObjectId(),
+        unique: true,
     },
     reactionBody: {
         type: String,
         required: true,
-        validate: {
-            validator: function(v){
-                return v.length < 280
-            },
-            message: props => `${props} is too long`
-        }
+        maxLength: 280,
     },
     username: {
         type: String,

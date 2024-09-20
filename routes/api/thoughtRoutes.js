@@ -98,6 +98,7 @@ router.delete('/:id', async(req, res)=>{
     }
 });
 
+//to fix
 
 router.post('/:id/reactions', async(req, res)=>{
     const newReaction = req.body;
@@ -107,17 +108,41 @@ router.post('/:id/reactions', async(req, res)=>{
     };
 
     try {
+        const thought = await Thought.findById(
+            req.params.id 
+          );
+          
+        
+        console.log(thought.reactions.create({reactionBody: newReaction.reactionBody, username: newReaction.username}))
+        await thought.save();
+
+        return res.status(201).json(thought);
+    } catch (error) {
+        return res.status(500).json('Internal server error');
+    }
+});
+
+router.delete('/:id/reactions/:reactionId', async(req,res)=>{
+    if(!req.params.id || !req.params.reactionId){
+        return res.status(400).json('Invalid request');
+    };
+
+    try {
         const thought = await Thought.findById(req.params.id);
 
         if(!thought){
             return res.status(404).json('Thought not found');
         };
 
-        thought.reactions.push(newReaction);
-
+        for(let i = 0; i < thought.reactions.length; i++){
+            if(String(thought.reactions[i].reactionId) === req.params.reactionId){
+                thought.reactions.splice(i, 1);
+                break;
+            }
+        }
+        
         await thought.save();
-
-        return res.status(201).json(thought);
+        return res.status(201).json(thought.reactions);
     } catch (error) {
         return res.status(500).json('Internal server error');
     }
