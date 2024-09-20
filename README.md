@@ -6,8 +6,7 @@
 [Usage](#usage)\
 [license](#license)\
 [Installation](#installation)\
-[Credits](#credits)\
-[Questions](#questions)\
+[Questions](#questions)
 
 ## Description
 This back end uses node.js, and mongosse to create a backend server connecting to a mongoDb database. This back end is made for social networking.  It stores users, thoughts, and reactions to thoughts.
