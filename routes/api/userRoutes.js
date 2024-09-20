@@ -86,20 +86,19 @@ router.delete('/:id', async(req, res)=>{
     };
 
     try {
-        //delete thoughts first 
-        const deletedThoughts = await Thought.deleteMany({
-            _id: req.params.id,
-        });
-
-        if(!deletedThoughts){
-            throw new Error('Internal server error');
-        }
-
         const deletedUser = await User.findByIdAndDelete(req.params.id);
 
         if(!deletedUser){
             return res.status(404).json('No user found');
         };
+
+        const deletedThoughts = await Thought.deleteMany({
+            username: deletedUser.username,
+        });
+
+        if(!deletedThoughts){
+            throw new Error('Internal server error');
+        }
 
         return res.status(201).json(`Successfully deleted user and ${deletedThoughts.deletedCount} thoughts associated with user`);
     } catch (error) {
@@ -121,7 +120,7 @@ router.post('/:id/friends/:friendId', async(req, res)=>{
             req.params.id,
             { $addToSet: {friends: req.params.friendId} },
             {new: true, runValidators: true},            
-        )
+        );
 
         if(!user){
             return res.status(404).json('User not found');
@@ -130,7 +129,7 @@ router.post('/:id/friends/:friendId', async(req, res)=>{
 
         return res.status(201).json(user);
     } catch (error) {
-        return res.status(500).json('Internal server error');
+        return res.status(500).json(`Internal server error, ${error}`);
     }
 });
 
