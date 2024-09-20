@@ -12,7 +12,7 @@ const reactionSchema = new mongoose.Schema({
         required: true,
         validate: {
             validator: function(v){
-                return v.length > 280
+                return v.length < 280
             },
             message: props => `${props} is too long`
         }
@@ -25,6 +25,6 @@ const reactionSchema = new mongoose.Schema({
         type: Date,
         default: Date.now(),
     }
-})
+}, { _id: false })
 
 module.exports = reactionSchema;

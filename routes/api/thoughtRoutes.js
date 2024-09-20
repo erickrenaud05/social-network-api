@@ -98,4 +98,29 @@ router.delete('/:id', async(req, res)=>{
     }
 });
 
+
+router.post('/:id/reactions', async(req, res)=>{
+    const newReaction = req.body;
+
+    if(!req.params.id || !newReaction){
+        return res.status(404).json('Invalid request');
+    };
+
+    try {
+        const thought = await Thought.findById(req.params.id);
+
+        if(!thought){
+            return res.status(404).json('Thought not found');
+        };
+
+        thought.reactions.push(newReaction);
+
+        await thought.save();
+
+        return res.status(201).json(thought);
+    } catch (error) {
+        return res.status(500).json('Internal server error');
+    }
+});
+
 module.exports = router;
